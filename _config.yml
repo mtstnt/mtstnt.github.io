@@ -1,0 +1,24 @@
+title:              Matthew's Technical Blog
+email:              matthew.sutanto0612@gmail.com
+description:        A technical blog by <a href="https://mtstnt.xyz">Matthew Sutanto</a>
+author:             Matthew Sutanto
+baseurl:            "/"
+url:                "https://mtstnt.github.io"
+
+# Social Profiles
+twitter_username:   mtstnt_
+github_username:    mtstnt
+instagram_username: mtstnt_
+linkedin_username:  matthewsutanto
+
+# Add your google-analytics ID here to activate google analytics
+google_analytics:   UA-XXXXXXXXX-X # out your google-analytics code
+
+# Build settings
+markdown:           kramdown
+paginate:           5
+paginate_path:      "/posts/page:num/"
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-sitemap ## Uncomment this line to silently generate a sitemaps.org compliant sitemap for your Jekyll site
