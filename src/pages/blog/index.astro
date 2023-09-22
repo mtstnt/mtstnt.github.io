@@ -15,16 +15,12 @@ const posts = (await getCollection("blog")).sort(
 >
 	<div class="w-11/12 md:w-8/12 sm:w-10/12 mx-auto min-h-screen">
 		<Navbar />
-		<h1 class="text-3xl p-2 text-center mb-5">Blog</h1>
+		<h1 class="text-3xl p-2 text-center mb-5 font-semibold">Blog</h1>
 		<p class="text-center w-9/12 mb-5 mx-auto">
-			Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur
-			voluptatibus illo cumque porro laudantium exercitationem dolor
-			doloribus aliquid modi, explicabo voluptatum eum doloremque. Placeat
-			vel in ut eveniet repellat porro temporibus, labore iusto adipisci
-			praesentium corrupti dicta molestiae laboriosam minus!
+			Some blog posts I wrote. Most of them are my learning notes and some things I found out that might be helpful for someone.
 		</p>
 
-		<div class="w-4/12 mx-auto flex shadow">
+		<div class="w-8/12 sm:w-4/12 mx-auto flex shadow">
 			<input
 				type="text"
 				name="searchText"
@@ -40,7 +36,7 @@ const posts = (await getCollection("blog")).sort(
 					<div class="sm:w-4/12 p-3 w-11/12 mx-auto sm:mx-0 post">
 						<a
 							href={`/blog/${post.slug}/`}
-							class="block shadow border hover:border-blue-900 rounded-md p-5 h-40"
+							class="block shadow border hover:border-blue-900 rounded-md p-5 min-h-50"
 						>
 							<h4 class="text-lg font-semibold post-title">
 								{post.data.title}
@@ -48,7 +44,7 @@ const posts = (await getCollection("blog")).sort(
 							<p class="date">
 								<FormattedDate date={post.data.pubDate} />
 							</p>
-							<p>{post.data.description.substring(0, 100)}</p>
+							<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta itaque corporis ad quo maxime iure tempora nam voluptatum nisi at. Quam, consequuntur adxx!</p>
 						</a>
 					</div>
 				))

@@ -17,3 +17,15 @@
 .content h4 {
 	@apply text-lg font-semibold;
 }
+.content ul li {
+	@apply list-disc ml-5;
+}
+.content pre {
+	@apply rounded mb-3 p-3;
+}
+.content mark {
+	@apply p-0;
+}
+.content ol li {
+	@apply list-decimal ml-5;
+}
