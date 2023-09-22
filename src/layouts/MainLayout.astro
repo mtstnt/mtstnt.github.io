@@ -1,0 +1,15 @@
+---
+import HeadComponent from "../components/HeadComponent.astro";
+const { title, description, image } = Astro.props;
+const today = new Date();
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+    <head>
+        <HeadComponent title={title} description={description} image={image} />
+    </head>
+    <body>
+        <slot />
+    </body>
+</html>

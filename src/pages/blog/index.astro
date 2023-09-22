@@ -1,0 +1,76 @@
+---
+import { getCollection } from "astro:content";
+import FormattedDate from "../../components/FormattedDate.astro";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Navbar from "../../components/Navbar.astro";
+
+const posts = (await getCollection("blog")).sort(
+	(a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+);
+---
+
+<MainLayout
+	title="Blog | Matthew Sutanto"
+	description="List of articles from Matthew Sutanto."
+>
+	<div class="w-11/12 md:w-8/12 sm:w-10/12 mx-auto min-h-screen">
+		<Navbar />
+		<h1 class="text-3xl p-2 text-center mb-5">Blog</h1>
+		<p class="text-center w-9/12 mb-5 mx-auto">
+			Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur
+			voluptatibus illo cumque porro laudantium exercitationem dolor
+			doloribus aliquid modi, explicabo voluptatum eum doloremque. Placeat
+			vel in ut eveniet repellat porro temporibus, labore iusto adipisci
+			praesentium corrupti dicta molestiae laboriosam minus!
+		</p>
+
+		<div class="w-4/12 mx-auto flex shadow">
+			<input
+				type="text"
+				name="searchText"
+				id="searchText"
+				class="p-2 rounded rounded-r-none border w-full"
+				placeholder="Search..."
+			/>
+		</div>
+
+		<div class="flex flex-wrap flex-col sm:flex-row">
+			{
+				posts.map((post) => (
+					<div class="sm:w-4/12 p-3 w-11/12 mx-auto sm:mx-0 post">
+						<a
+							href={`/blog/${post.slug}/`}
+							class="block shadow border hover:border-blue-900 rounded-md p-5 h-40"
+						>
+							<h4 class="text-lg font-semibold post-title">
+								{post.data.title}
+							</h4>
+							<p class="date">
+								<FormattedDate date={post.data.pubDate} />
+							</p>
+							<p>{post.data.description.substring(0, 100)}</p>
+						</a>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</MainLayout>
+
+<script is:inline>
+const searchInput = document.querySelector('input[name="searchText"]');
+const postsList = [...document.querySelectorAll(".post")];
+	searchInput.addEventListener("input", (event) => {
+		const value = event.target.value;
+		if (value == "") {
+			postsList.forEach((e) => e.classList.remove("hidden"));
+		} else {
+			postsList.forEach((e) => {
+				const title = e.querySelector(".post-title").innerText;
+				if (!title.toLowerCase().includes(value.toLowerCase())) {
+					e.classList.add("hidden");
+				}
+			});
+		}
+	});
+</script>

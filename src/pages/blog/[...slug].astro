@@ -1,0 +1,46 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import MainLayout from "../../layouts/MainLayout.astro";
+import Navbar from "../../components/Navbar.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+import "../../styles/content.css";
+import Footer from "../../components/Footer.astro";
+
+export async function getStaticPaths() {
+    const posts = await getCollection("blog");
+    return posts.map((post) => ({
+        params: { slug: post.slug },
+        props: post,
+    }));
+}
+
+type Props = CollectionEntry<"blog">;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<MainLayout
+    title={post.data.title + " | @mtstnt Blog"}
+    description={post.data.description}
+>
+    <Navbar />
+    <div class="container flex justify-center min-h-screen">
+        <div class="w-11/12 sm:w-10/12 md:w-8/12 lg:w-6/12">
+            <h1 class="text-3xl text-center font-bold mb-3">
+                {post.data.title}
+            </h1>
+            <h3 class="text-center mb-2">
+                <FormattedDate date={post.data.pubDate} />
+            </h3>
+            <h3 class="text-center mb-2">
+                Matthew Sutanto
+            </h3>
+            <hr class="my-5" />
+            <div class="content">
+                <Content />
+            </div>
+            <Footer />
+        </div>
+    </div>
+</MainLayout>

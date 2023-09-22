@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.content * {
+	@apply leading-7 py-2;
+}
+.content h1 {
+	@apply text-3xl font-semibold;
+}
+.content h2 {
+	@apply text-2xl font-semibold;
+}
+.content h3 {
+	@apply text-xl font-semibold;
+}
+.content h4 {
+	@apply text-lg font-semibold;
+}
