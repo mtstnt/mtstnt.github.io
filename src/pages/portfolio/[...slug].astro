@@ -7,21 +7,21 @@ import "../../styles/content.css";
 import Footer from "../../components/Footer.astro";
 
 export async function getStaticPaths() {
-    const posts = await getCollection("blog");
-    return posts.map((post) => ({
-        params: { slug: post.slug },
-        props: post,
+    const portfolios = await getCollection("portfolios");
+    return portfolios.map((p) => ({
+        params: { slug: p.slug },
+        props: p,
     }));
 }
 
-type Props = CollectionEntry<"blog">;
+type Props = CollectionEntry<"portfolios">;
 
 const post = Astro.props;
 const { Content } = await post.render();
 ---
 
 <MainLayout
-    title={post.data.title + " | @mtstnt Blog"}
+    title={post.data.title + " | @mtstnt Portfolios"}
     description={post.data.description}
 >
     <Navbar />

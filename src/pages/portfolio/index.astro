@@ -1,0 +1,56 @@
+---
+import FormattedDate from "../../components/FormattedDate.astro";
+import Navbar from "./../../components/Navbar.astro";
+import MainLayout from "./../../layouts/MainLayout.astro";
+
+import { getCollection } from "astro:content";
+
+const portfolios = await getCollection("portfolios");
+---
+
+<MainLayout title="Porfolio | Matthew Sutanto" description="">
+    <Navbar />
+    <h1 class="text-3xl p-2 text-center mb-5 font-semibold">Portfolio</h1>
+    <p class="text-center w-9/12 mb-5 mx-auto">
+        My side-projects. Commercial projects are not shown here as most of them aren't allowed to be published.
+    </p>
+
+    <div class="flex flex-wrap flex-row">
+        {
+            portfolios.map((p) => (
+                <div class="w-11/12 sm:w-6/12 p-3 mx-auto post">
+                    <a
+                        href={`/portfolio/${p.slug}/`}
+                        class="block shadow border hover:border-blue-900 rounded-md p-5 min-h-50"
+                    >
+                        <h4 class="text-lg font-semibold post-title">
+                            {p.data.title}
+                        </h4>
+                        <p class="date">
+                            <FormattedDate date={p.data.publishDate} />
+                        </p>
+                        <p>{p.data.description}</p>
+                    </a>
+                </div>
+            ))
+        }
+    </div>
+</MainLayout>
+
+<script is:inline>
+const searchInput = document.querySelector('input[name="searchText"]');
+const postsList = [...document.querySelectorAll(".post")];
+searchInput.addEventListener("input", (event) => {
+    const value = event.target.value;
+    if (value == "") {
+        postsList.forEach((e) => e.classList.remove("hidden"));
+    } else {
+        postsList.forEach((e) => {
+            const title = e.querySelector(".post-title").innerText;
+            if (!title.toLowerCase().includes(value.toLowerCase())) {
+                e.classList.add("hidden");
+            }
+        });
+    }
+});
+</script>
