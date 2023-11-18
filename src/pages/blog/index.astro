@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import FormattedDate from "../../components/FormattedDate.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
-import Navbar from "../../components/Navbar.astro";
 
 const posts = (await getCollection("blog")).sort(
 	(a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf()
@@ -31,22 +30,26 @@ const posts = (await getCollection("blog")).sort(
 
 	<div class="flex flex-wrap flex-row w-11/12 sm:4/12 p-5 mx-auto">
 		{
-			posts.map((post) => (
-				<div class="w-4/12 p-2">
-					<a
-						href={`/blog/${post.slug}/`}
-						class="block shadow border hover:border-blue-900 rounded-lg p-5 min-h-50 h-56"
-					>
-						<h4 class="text-lg font-semibold post-title">
-							{post.data.title}
-						</h4>
-						<p class="date">
-							<FormattedDate date={post.data.publishDate} />
-						</p>
-						<p>{post.data.description}</p>
-					</a>
-				</div>
-			))
+			posts.map((post) => {
+				const excerpt = post.data.description.length > 100 ? post.data.description.substring(0, 100) + "..." : post.data.description;
+				return (
+					<div class="w-4/12 p-2">
+						<a
+							href={`/blog/${post.slug}/`}
+							class="block shadow border hover:border-blue-900 rounded-lg p-5 min-h-50 h-56"
+						>
+							<h4 class="text-lg font-semibold post-title mb-2">
+								{post.data.title}
+							</h4>
+							<span>{post.data.tags?.join(", ") ?? ""}</span>
+							<p class="date mb-2">
+								<FormattedDate date={post.data.publishDate} />
+							</p>
+							<p>{excerpt}</p>
+						</a>
+					</div>
+				);
+			})
 		}
 	</div>
 </MainLayout>

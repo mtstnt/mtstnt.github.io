@@ -25,7 +25,7 @@ const { Content } = await post.render();
     description={post.data.description}
 >
     <div class="container flex justify-center min-h-screen">
-        <div class="w-9/12">
+        <div class="w-full sm:w-9/12 p-5 sm:p-0">
             <h1 class="text-3xl text-center font-bold mb-3">
                 {post.data.title}
             </h1>
@@ -36,7 +36,6 @@ const { Content } = await post.render();
             <div class="content p-3">
                 <Content />
             </div>
-            <Footer />
         </div>
     </div>
 </MainLayout>

@@ -1,17 +1,19 @@
 ---
 import FormattedDate from "../../components/FormattedDate.astro";
-import Navbar from "./../../components/Navbar.astro";
 import MainLayout from "./../../layouts/MainLayout.astro";
 
 import { getCollection } from "astro:content";
 
-const portfolios = await getCollection("portfolios");
+const portfolios = (await getCollection("portfolios")).sort(
+    (a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf()
+);
 ---
 
 <MainLayout title="Porfolio | Matthew Sutanto" description="">
     <h1 class="text-3xl p-2 text-center mb-5 font-semibold">Portfolio</h1>
     <p class="text-center w-9/12 mb-5 mx-auto">
-        My side-projects. Commercial projects are not shown here as most of them aren't allowed to be published.
+        My side-projects. Commercial projects are not shown here as most of them
+        aren't allowed to be published.
     </p>
 
     <div class="flex flex-wrap flex-row">
@@ -51,5 +53,5 @@ searchInput.addEventListener("input", (event) => {
             }
         });
     }
-});
+    });
 </script>

@@ -8,9 +8,9 @@ const { title, description, image } = Astro.props;
     <head>
         <HeadComponent title={title} description={description} image={image} />
     </head>
-    <body class="bg-gray-950 text-white overflow-hidden">
-        <div class="w-full h-screen overflow-hidden flex flex-row flex-nowrap">
-            <div class="w-3/12 flex p-5 flex-col h-full">
+    <body class="bg-gray-950 text-white overflow-auto sm:overflow-hidden">
+        <div class="w-full sm:h-screen h-auto flex flex-col sm:flex-row flex-nowrap">
+            <div class="w-full sm:w-3/12 flex p-5 flex-col h-full">
                 <div class="flex justify-center flex-col">
                     <h1 class="text-3xl p-2 text-center font-semibold">
                         Hello world!
@@ -68,7 +68,7 @@ const { title, description, image } = Astro.props;
                     </a>
                 </div>
             </div>
-            <div class="w-9/12 overflow-auto bg-gray-900 p-6">
+            <div class="sm:w-9/12 w-full mx-auto overflow-hidden sm:overflow-auto bg-gray-900 p-6">
                 <slot />
             </div>
         </div>

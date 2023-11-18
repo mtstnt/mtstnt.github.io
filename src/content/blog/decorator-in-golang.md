@@ -3,6 +3,7 @@ title: Decorator Pattern in Golang
 description: Decorator pattern is the one of the simple yet very useful pattern, and this time we're going to look at how we can implement it in Go programming language.
 publishDate: 16 Oct 2023
 pubDate: 16 Oct 2023
+tags: ['golang', 'design pattern']
 ---
 Decorator pattern is one of the simplest pattern in Go yet it also solves a lot of problems.
 Let's take a look.

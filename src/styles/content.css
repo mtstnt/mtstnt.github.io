@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 a {
-	@apply text-gray-100;
+	@apply text-purple-400;
 }
 
 /* Content Overrides */
 .content * {
-	@apply leading-7 py-2;
+	@apply leading-7 py-2 mb-2;
+}
+.content a {
+	@apply text-green-300 hover:underline;
 }
 .content h1 {
 	@apply text-3xl font-semibold;
