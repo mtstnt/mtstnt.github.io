@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+a {
+	@apply text-gray-100;
+}
+
+/* Content Overrides */
 .content * {
 	@apply leading-7 py-2;
 }
