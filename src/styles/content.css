@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-a {
-	@apply text-green-300 hover:underline;
-}
-
 /* Content Overrides */
 .content * {
 	@apply leading-7 py-2 mb-2;
