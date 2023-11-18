@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 a {
-	@apply text-purple-400;
+	@apply text-green-300 hover:underline;
 }
 
 /* Content Overrides */

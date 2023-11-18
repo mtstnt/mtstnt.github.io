@@ -2,6 +2,11 @@
 title: 'Markdown Style Guide'
 description: 'Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.'
 publishDate: 1 Jul 2022
+tags:
+  - introduction
+  - markdown
+  - golang
+show: false
 ---
 
 Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.

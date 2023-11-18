@@ -22,7 +22,7 @@ const portfolios = (await getCollection("portfolios")).sort(
                 <div class="w-11/12 sm:w-6/12 p-3 mx-auto post">
                     <a
                         href={`/portfolio/${p.slug}/`}
-                        class="block shadow border hover:border-blue-900 rounded-md p-5 min-h-50"
+                        class="block shadow border hover:outline-white hover:outline-2 outline outline-1 outline-white rounded-md p-5 min-h-50 hover:no-underline"
                     >
                         <h4 class="text-lg font-semibold post-title">
                             {p.data.title}

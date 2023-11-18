@@ -3,9 +3,21 @@ import { getCollection } from "astro:content";
 import FormattedDate from "../../components/FormattedDate.astro";
 import MainLayout from "../../layouts/MainLayout.astro";
 
-const posts = (await getCollection("blog")).sort(
+const posts = (await getCollection("blog", entry => entry.data.show)).sort(
 	(a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf()
 );
+
+const generateRandomColor = () =>
+	Math.floor(Math.random() * 16777215).toString(16);
+
+const tagsColor = posts.reduce((accumulator, current) => {
+	for (let tag of current.data.tags ?? []) {
+		if (!accumulator.has(tag)) {
+			accumulator.set(tag, generateRandomColor());
+		}
+	}
+	return accumulator;
+}, new Map<String, String>());
 ---
 
 <MainLayout
@@ -13,12 +25,12 @@ const posts = (await getCollection("blog")).sort(
 	description="List of articles from Matthew Sutanto."
 >
 	<h1 class="text-3xl p-2 text-center mb-5 font-semibold">Blog</h1>
-	<p class="text-center w-9/12 mb-5 mx-auto">
+	<p class="text-center sm:w-9/12 w-full mb-5 mx-auto">
 		Some blog posts I wrote. Most of them are my learning notes and some
 		things I found out that might be helpful for someone.
 	</p>
 
-	<div class="w-8/12 sm:w-4/12 mx-auto flex shadow">
+	<!-- <div class="w-8/12 sm:w-4/12 mx-auto flex shadow mb-3">
 		<input
 			type="text"
 			name="searchText"
@@ -26,22 +38,67 @@ const posts = (await getCollection("blog")).sort(
 			class="p-2 rounded-md border w-full text-black"
 			placeholder="Search..."
 		/>
+	</div> -->
+
+	<div
+		class="flex flex-row justify-center items-center p-3 sm:w-8/12 w-full mx-auto flex-wrap"
+		id="tagfilter"
+	>
+		{
+			Array.from(tagsColor.entries()).map((e) => (
+				<span
+					class="mb-2 p-2 px-3 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-1 hover:outline-white"
+					style={{
+						backgroundColor: `#${e[1]}`,
+					}}
+				>
+					{e[0]}
+				</span>
+			))
+		}
+		<span
+			class="p-2 px-3 mb-2 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-2 hover:outline-white outline outline-1"
+		>
+			Clear Filter
+		</span>
 	</div>
 
 	<div class="flex flex-wrap flex-row w-11/12 sm:4/12 p-5 mx-auto">
 		{
-			posts.map((post) => {
-				const excerpt = post.data.description.length > 100 ? post.data.description.substring(0, 100) + "..." : post.data.description;
+			posts.map((post, idx) => {
+				const excerpt =
+					post.data.description.length > 100
+						? post.data.description.substring(0, 100) + "..."
+						: post.data.description;
 				return (
-					<div class="w-4/12 p-2">
+					<div class="sm:w-4/12 w-full p-2" id={"post_" + idx}>
 						<a
 							href={`/blog/${post.slug}/`}
-							class="block shadow border hover:border-blue-900 rounded-lg p-5 min-h-50 h-56"
+							class="block shadow outline outline-1 outline-white hover:outline-2 rounded-lg p-5 min-h-50 h-64 hover:no-underline"
 						>
 							<h4 class="text-lg font-semibold post-title mb-2">
 								{post.data.title}
 							</h4>
-							<span>{post.data.tags?.join(", ") ?? ""}</span>
+							{post.data.tags == null ? (
+								<span />
+							) : (
+								<div class="flex flex-row mb-3">
+									{Array.from(
+										post.data.tags.map((e: string) => (
+											<span
+												class="p-2 px-3 mr-2 rounded-full text-xs"
+												style={{
+													backgroundColor: `#${tagsColor.get(
+														e
+													)}`,
+												}}
+											>
+												{e}
+											</span>
+										))
+									)}
+								</div>
+							)}
 							<p class="date mb-2">
 								<FormattedDate date={post.data.publishDate} />
 							</p>
@@ -52,4 +109,32 @@ const posts = (await getCollection("blog")).sort(
 			})
 		}
 	</div>
+
+	<span class="hidden" id="posts-hax">{JSON.stringify(posts)}</span>
+
+	<script>
+		const posts = JSON.parse(
+			document.getElementById("posts-hax").innerText
+		);
+		const noFilterText = "Clear Filter"
+
+		const tagFilters = document
+			.getElementById("tagfilter")
+			.querySelectorAll("span");
+		for (let tagFilter of tagFilters) {
+			const tag = tagFilter.innerText;
+			tagFilter.addEventListener("click", () => {
+				for (let i in posts) {
+					document.getElementById("post_" + i).style.display =
+						"block";
+					if (tag != noFilterText) {
+						if (!posts[i].data.tags.includes(tag)) {
+							document.getElementById("post_" + i).style.display =
+								"none";
+						}
+					}
+				}
+			});
+		}
+	</script>
 </MainLayout>
