@@ -71,7 +71,7 @@ const tagsColor = posts.reduce((accumulator, current) => {
 						? post.data.description.substring(0, 100) + "..."
 						: post.data.description;
 				return (
-					<div class="sm:w-4/12 w-full p-2" id={"post_" + idx}>
+					<div class="xl:w-4/12 w-full p-2" id={"post_" + idx}>
 						<a
 							href={`/blog/${post.slug}/`}
 							class="block shadow outline outline-1 outline-white hover:outline-2 rounded-lg p-5 min-h-50 h-64 hover:no-underline"
