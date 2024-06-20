@@ -87,12 +87,7 @@ const tagsColor = posts.reduce((accumulator, current) => {
 										post.data.tags.map((e: string) => (
 											<span
 												class="p-2 px-3 mr-2 rounded-full text-xs"
-												style={{
-													backgroundColor: `#${tagsColor.get(
-														e
-													)}`,
-												}}
-											>
+												style={{ backgroundColor: `#${tagsColor.get(e)}` }}>
 												{e}
 											</span>
 										))
@@ -113,28 +108,28 @@ const tagsColor = posts.reduce((accumulator, current) => {
 	<span class="hidden" id="posts-hax">{JSON.stringify(posts)}</span>
 
 	<script>
-		const posts = JSON.parse(
-			document.getElementById("posts-hax").innerText
-		);
-		const noFilterText = "Clear Filter"
+		// const posts = JSON.parse(
+		// 	document.getElementById("posts-hax").innerText
+		// );
+		// const noFilterText = "Clear Filter"
 
-		const tagFilters = document
-			.getElementById("tagfilter")
-			.querySelectorAll("span");
-		for (let tagFilter of tagFilters) {
-			const tag = tagFilter.innerText;
-			tagFilter.addEventListener("click", () => {
-				for (let i in posts) {
-					document.getElementById("post_" + i).style.display =
-						"block";
-					if (tag != noFilterText) {
-						if (!posts[i].data.tags.includes(tag)) {
-							document.getElementById("post_" + i).style.display =
-								"none";
-						}
-					}
-				}
-			});
-		}
+		// const tagFilters = document
+		// 	.getElementById("tagfilter")
+		// 	.querySelectorAll("span");
+		// for (let tagFilter of tagFilters) {
+		// 	const tag = tagFilter.innerText;
+		// 	tagFilter.addEventListener("click", () => {
+		// 		for (let i in posts) {
+		// 			document.getElementById("post_" + i).style.display =
+		// 				"block";
+		// 			if (tag != noFilterText) {
+		// 				if (!posts[i].data.tags.includes(tag)) {
+		// 					document.getElementById("post_" + i).style.display =
+		// 						"none";
+		// 				}
+		// 			}
+		// 		}
+		// 	});
+		// }
 	</script>
 </MainLayout>

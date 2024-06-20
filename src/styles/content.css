@@ -1,10 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Font override */
+@layer base {
+	html {
+		font-family: 'Inter', 'sans-serif';
+	}	
+}
+
+/* Scrollbar */
+body {
+	--sb-track-color: #301e67;
+	--sb-thumb-color: #03001c;
+	--sb-size: 14px;
+}
+
+body::-webkit-scrollbar {
+	width: var(--sb-size);
+}
+
+body::-webkit-scrollbar-track {
+	background: var(--sb-track-color);
+	border-radius: 3px;
+}
+
+body::-webkit-scrollbar-thumb {
+	background: var(--sb-thumb-color);
+	border-radius: 3px;
+}
+
 /* Content Overrides */
 .content * {
-	@apply leading-7 py-2 mb-2;
+	@apply py-2 mb-2 leading-7;
 }
 .content a {
 	@apply text-green-300 hover:underline;
@@ -22,14 +52,14 @@
 	@apply text-lg font-semibold;
 }
 .content ul li {
-	@apply list-disc ml-5;
+	@apply ml-5 list-disc;
 }
 .content pre {
-	@apply rounded mb-3 p-3;
+	@apply p-3 mb-3 rounded;
 }
 .content mark {
 	@apply p-0;
 }
 .content ol li {
-	@apply list-decimal ml-5;
+	@apply ml-5 list-decimal;
 }

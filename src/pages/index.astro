@@ -3,9 +3,46 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="Home | Matthew Sutanto" description="The home page">
-	<h1 class="text-3xl font-bold mb-3">Hello world!</h1>
-	<p>
-		Welcome to my personal website. The home page is currently empty, but I will fill it as soon as possible. <br>
-		In the meantime, please visit my blog and portfolios page. Thank you!
-	</p>
+	
+	<header class="flex flex-col items-center w-full mb-6 sm:space-x-8 sm:flex-row">
+		<div class="flex justify-center w-full p-5 sm:w-3/12">
+			<div class="w-[200px] h-[200px] overflow-hidden rounded-full">
+				<img
+					class="w-full h-full"
+					src="/matt.jpg"
+					alt="Matthew Sutanto"
+				/>
+			</div>
+		</div>
+		<div class="w-full sm:w-9/12">
+			<h2 class="mb-3 text-5xl font-bold">Hello world! 👋</h2>
+			<p class="leading-7">
+				I'm Matthew Sutanto. I go by <span class="font-mono text-black px-2 rounded bg-[#B6EADA]">mtstnt</span> on the internet. <br> 
+				I'm a software engineer mostly specializing in Backend and Mobile App Development, with some interest in systems and low level programming. <br>
+				You can access stuff I write <a class="hover:underline text-[#5B8FB9]" href="/blog">here</a>
+			</p>
+		</div>
+	</header>
+	
+	<section class="mb-6">
+		<h2 class="mb-3 text-3xl font-bold">🏢 Work</h2>
+		<ul class="leading-7 list-disc">
+			<li class="mb-1 ms-5">Asst. Lecturer @ <a href="https://petra.ac.id">Petra Christian University (2020 - 2023)</a></li>
+			<li class="mb-1 ms-5">Software Engineer @ Trivlab (PT Digital Teknologi Informasi) (2021 - 2022)</li>
+			<li class="mb-1 ms-5">Software Engineer @ SWR Solutama (2023)</li>
+			<li class="mb-1 ms-5">Software Development Engineer @ <a href="https://gdplabs.id">GDP Labs</a> (2024 - present)</li>
+			<li class="mb-1 ms-5">Freelance Software Engineer (2021 - present)</li>
+		</ul>
+	</section>
+	
+	<section class="mb-6">
+		<h2 class="mb-3 text-3xl font-bold">🧪 Projects</h2>
+		<!-- <ul class="leading-7 list-disc">
+			<li class="mb-1 ms-5"></li>
+		</ul> -->
+		<span class="font-bold">// TODO: Not listed yet!</span>
+	</section>
+	
+	
+	
 </MainLayout>

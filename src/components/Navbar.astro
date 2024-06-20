@@ -1,5 +1,16 @@
-<nav class="flex top-0 justify-center items-center p-3 shadow mb-3 sticky bg-gray-900">
-    <a class="text-center w-20 hover:underline hover:transition" href="/">Home</a>
-    <a class="text-center w-20 hover:underline hover:transition" href="/blog">Blog</a>
-    <a class="text-center w-20 hover:underline hover:transition" href="/portfolio">Portfolio</a>
+---
+import SocialMedia from "./SocialMedia.astro";
+---
+
+<nav class="sticky top-0 py-5 bg-[#301E67] shadow text-slate-200">
+    <div class="flex flex-row justify-between w-11/12 mx-auto space-x-8 sm:w-6/12">
+        <div class="flex flex-row items-center justify-start space-x-8">
+            <h3 class="text-xl font-bold"><a class="hover:underline" href="/">@mtstnt</a></h3>
+            <a class="text-center hover:underline" href="/blog">Blog</a>
+            <a class="text-center hover:underline" href="/portfolio">Portfolio</a>
+        </div>
+        <div class="flex flex-row items-center justify-end">
+            <SocialMedia />
+        </div>
+    </div>
 </nav>
