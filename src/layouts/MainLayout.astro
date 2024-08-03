@@ -15,45 +15,10 @@ const { title, description, image } = Astro.props;
     </head>
     <body class="text-white bg-[#03001C]">
         <Navbar />
-        <div class="w-11/12 mx-auto mt-3 sm:w-6/12">
+        <div class="w-11/12 mx-auto mt-3 xl:w-6/12">
             <div class="w-full">
                 <slot />
             </div>
         </div>
-        
-        <!-- <div class="flex flex-col w-full h-auto lg:h-screen lg:flex-row flex-nowrap">
-            <div class="flex flex-col w-full h-full p-5 lg:w-3/12">
-                <div class="flex flex-col justify-center">
-                    <h1 class="p-2 text-3xl font-semibold text-center">
-                        Hello world!
-                    </h1>
-                    <div class="flex justify-center w-full">
-                        <img
-                            src="/matt.jpg"
-                            class="m-4 rounded-full"
-                            width="150"
-                            height="150"
-                            alt="Matthew Sutanto"
-                        />
-                    </div>
-
-                    <nav class="flex items-center justify-center p-3 shadow">
-                        <a class="w-16 text-center hover:underline hover:transition" href="/">Home</a>
-                        <a class="w-16 text-center hover:underline hover:transition" href="/blog">Blog</a>
-                        <a class="w-16 text-center hover:underline hover:transition" href="/portfolio">Portfolio</a>
-                    </nav>
-
-                    <h3 class="p-2 mb-3 text-base text-center">
-                        I'm Matthew, a software engineer based in Indonesia.
-                    </h3>
-                </div>
-
-
-                
-            </div>
-            <div class="w-full p-6 mx-auto overflow-hidden bg-gray-900 lg:w-9/12 lg:overflow-auto">
-                <slot />
-            </div>
-        </div> -->
     </body>
 </html>

@@ -7,30 +7,25 @@ const posts = (await getCollection("blog", entry => entry.data.show)).sort(
 	(a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf()
 );
 
-const generateRandomColor = () =>
-	Math.floor(Math.random() * 16777215).toString(16);
-
-const tagsColor = posts.reduce((accumulator, current) => {
-	for (let tag of current.data.tags ?? []) {
-		if (!accumulator.has(tag)) {
-			accumulator.set(tag, generateRandomColor());
-		}
-	}
-	return accumulator;
-}, new Map<String, String>());
+const COLOR_TAGS = {
+	'software-development': { bg: '#95e6ab', text: '#000000' },
+	'tutorial': { bg: '#afc965', text: '#000000' },
+	'golang': { bg: '#2ac1c9', text: '#000000' },
+	'design pattern': { bg: '#862ab8', text: '#FFFFFF' },
+};
 ---
 
 <MainLayout
 	title="Blog | Matthew Sutanto"
 	description="List of articles from Matthew Sutanto."
 >
-	<h1 class="text-3xl p-2 text-center mb-5 font-semibold">Blog</h1>
+	<h1 class="text-3xl p-2 text-center mb-5 font-semibold">My Blog</h1>
 	<p class="text-center sm:w-9/12 w-full mb-5 mx-auto">
-		Some blog posts I wrote. Most of them are my learning notes and some
-		things I found out that might be helpful for someone.
+		Things I write. Mostly about software development, but sometimes about
+		other things too.
 	</p>
 
-	<!-- <div class="w-8/12 sm:w-4/12 mx-auto flex shadow mb-3">
+	<div class="xl:w-10/12 w-full mx-auto flex shadow mb-3">
 		<input
 			type="text"
 			name="searchText"
@@ -38,40 +33,37 @@ const tagsColor = posts.reduce((accumulator, current) => {
 			class="p-2 rounded-md border w-full text-black"
 			placeholder="Search..."
 		/>
-	</div> -->
+	</div>
 
 	<div
 		class="flex flex-row justify-center items-center p-3 sm:w-8/12 w-full mx-auto flex-wrap"
-		id="tagfilter"
 	>
 		{
-			Array.from(tagsColor.entries()).map((e) => (
+			Object.entries(COLOR_TAGS).map((e) => (
 				<span
-					class="mb-2 p-2 px-3 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-1 hover:outline-white"
-					style={{
-						backgroundColor: `#${e[1]}`,
-					}}
+					class="tags mb-2 p-2 px-3 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-1 hover:outline-white"
+					style={{ backgroundColor: e[1].bg, color: e[1].text }}
 				>
 					{e[0]}
 				</span>
 			))
 		}
 		<span
-			class="p-2 px-3 mb-2 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-2 hover:outline-white outline outline-1"
+			class="clear-filter p-2 px-3 mb-2 mx-2 rounded-full text-xs cursor-pointer hover:outline hover:outline-2 hover:outline-white outline outline-1"
 		>
 			Clear Filter
 		</span>
 	</div>
 
-	<div class="flex flex-wrap flex-row w-11/12 sm:4/12 p-5 mx-auto">
+	<div class="flex flex-wrap justify-start flex-row w-11/12 xl:4/12 xl:p-5 mx-auto" id="posts">
 		{
 			posts.map((post, idx) => {
 				const excerpt =
 					post.data.description.length > 100
-						? post.data.description.substring(0, 100) + "..."
+						? post.data.description.substring(0, 50) + "..."
 						: post.data.description;
 				return (
-					<div class="xl:w-4/12 w-full p-2" id={"post_" + idx}>
+					<div class="post xl:w-4/12 w-full p-2" id={"post_" + idx}>
 						<a
 							href={`/blog/${post.slug}/`}
 							class="block shadow outline outline-1 outline-white hover:outline-2 rounded-lg p-5 min-h-50 h-64 hover:no-underline"
@@ -83,15 +75,21 @@ const tagsColor = posts.reduce((accumulator, current) => {
 								<span />
 							) : (
 								<div class="flex flex-row mb-3">
-									{Array.from(
-										post.data.tags.map((e: string) => (
-											<span
-												class="p-2 px-3 mr-2 rounded-full text-xs"
-												style={{ backgroundColor: `#${tagsColor.get(e)}` }}>
-												{e}
-											</span>
-										))
-									)}
+									{
+										post.data.tags.map((e: string) => {
+											// What am I doing, really...?
+											const key: keyof typeof COLOR_TAGS = (e as any);
+											const color = COLOR_TAGS[key] ?? { bg: '000000', text: 'FFFFFF' };
+											return (
+												<span
+													class="tags p-2 px-3 mr-2 rounded-full text-xs"
+													style={{ backgroundColor: color.bg, color: color?.text}}
+												>
+													{e}
+												</span>
+											);
+										})
+									}
 								</div>
 							)}
 							<p class="date mb-2">
@@ -105,31 +103,52 @@ const tagsColor = posts.reduce((accumulator, current) => {
 		}
 	</div>
 
-	<span class="hidden" id="posts-hax">{JSON.stringify(posts)}</span>
-
-	<script>
-		// const posts = JSON.parse(
-		// 	document.getElementById("posts-hax").innerText
-		// );
-		// const noFilterText = "Clear Filter"
-
-		// const tagFilters = document
-		// 	.getElementById("tagfilter")
-		// 	.querySelectorAll("span");
-		// for (let tagFilter of tagFilters) {
-		// 	const tag = tagFilter.innerText;
-		// 	tagFilter.addEventListener("click", () => {
-		// 		for (let i in posts) {
-		// 			document.getElementById("post_" + i).style.display =
-		// 				"block";
-		// 			if (tag != noFilterText) {
-		// 				if (!posts[i].data.tags.includes(tag)) {
-		// 					document.getElementById("post_" + i).style.display =
-		// 						"none";
-		// 				}
-		// 			}
-		// 		}
-		// 	});
-		// }
+	<script is:inline>
+		let currentTagFilter = null;
+		const allPosts = document.querySelectorAll('.post');
+		const tags = document.querySelectorAll('.tags');
+		const clearFilter = document.querySelector('.clear-filter');
+		
+		tags.forEach(e => {
+			e.addEventListener('click', () => {
+				const tag = e.innerText;
+				currentTagFilter = (currentTagFilter == tag) ? null : tag;
+				console.log(allPosts);
+				updatePostsVisibility();
+				updateSelectedTag();
+			});
+		});
+		
+		clearFilter.addEventListener('click', e => {
+			currentTagFilter = null;
+			updatePostsVisibility();
+			updateSelectedTag();
+		});
+		
+		function updateSelectedTag() {
+			tags.forEach(e => {
+				if (e.innerText == currentTagFilter) {
+					e.classList.add('outline');
+					e.classList.add('outline-3');
+					e.classList.add('outline-white');
+				} else {
+					e.classList.remove('outline');
+					e.classList.remove('outline-3');
+					e.classList.remove('outline-white');
+				}
+			});
+		}
+		
+		function updatePostsVisibility() {
+			allPosts.forEach(e => {
+				const tags = e.querySelectorAll('.tags');
+				const tagsArray = Array.from(tags).map(e => e.innerText);
+				if (currentTagFilter == null || tagsArray.includes(currentTagFilter)) {
+					e.style.display = 'block';
+				} else {
+					e.style.display = 'none';
+				}
+			});
+		}
 	</script>
 </MainLayout>
