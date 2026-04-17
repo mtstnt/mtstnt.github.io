@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import profileImage from '../assets/blog-placeholder-about.jpg';
 import Layout from '../layouts/Layout.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { PROFILE, SITE_METADATA } from '../settings';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -11,6 +11,8 @@ const posts = (await getCollection('blog')).sort(
 
 const featuredPost = posts[0];
 const recentPosts = posts.slice(1, 4);
+const hasBlogPosts = posts.length > 0;
+const hasRecentPosts = recentPosts.length > 0;
 
 const portfolioItems = (await getCollection('portfolio'))
 	.sort((a, b) => {
@@ -21,7 +23,7 @@ const portfolioItems = (await getCollection('portfolio'))
 	.slice(0, 3);
 ---
 
-<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+<Layout title={SITE_METADATA.title} description={SITE_METADATA.description}>
 	<section class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
 		<div class="space-y-6">
 			<p class="text-xs uppercase tracking-[0.35em] text-muted-foreground">Personal site</p>
@@ -52,7 +54,7 @@ const portfolioItems = (await getCollection('portfolio'))
 		</div>
 		<div class="rounded-3xl border border-border bg-card p-6 md:p-8">
 			<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">About me</p>
-			<h2 class="mt-3 font-[Fraunces] text-3xl leading-tight md:text-4xl">Hi, I'm mtstnt.</h2>
+			<h2 class="mt-3 font-[Fraunces] text-3xl leading-tight md:text-4xl">Hi, I'm {PROFILE.username}.</h2>
 			<p class="mt-4 text-base leading-relaxed text-muted-foreground">
 				I build software with a focus on simplicity, reliability, and readable architecture. I enjoy
 				working across product and engineering to make complex systems feel approachable.
@@ -65,7 +67,7 @@ const portfolioItems = (await getCollection('portfolio'))
 				<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Connect</p>
 				<div class="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em]">
 					<a
-						href="https://www.linkedin.com/in/matthewsutanto/"
+						href={PROFILE.links.linkedin}
 						target="_blank"
 						rel="noreferrer"
 						class="rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:text-foreground"
@@ -73,7 +75,7 @@ const portfolioItems = (await getCollection('portfolio'))
 						LinkedIn
 					</a>
 					<a
-						href="https://github.com/mtstnt"
+						href={PROFILE.links.github}
 						target="_blank"
 						rel="noreferrer"
 						class="rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:text-foreground"
@@ -81,7 +83,7 @@ const portfolioItems = (await getCollection('portfolio'))
 						GitHub
 					</a>
 				</div>
-				<p class="mt-3 text-sm text-muted-foreground">matthew.sutanto0612 [at] gmail [dot] com</p>
+				<p class="mt-3 text-sm text-muted-foreground">{PROFILE.emailMasked}</p>
 			</div>
 		</div>
 	</section>
@@ -93,22 +95,29 @@ const portfolioItems = (await getCollection('portfolio'))
 				View all projects
 			</a>
 		</div>
-		<div class="grid gap-4 md:grid-cols-3">
-			{portfolioItems.map((item) => (
-				<a href={`/portfolio/${item.id}/`} class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground">
-					<h3 class="font-[Fraunces] text-2xl leading-tight">{item.data.title}</h3>
-					<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{item.data.summary}</p>
-					{item.data.stack.length > 0 && (
-						<p class="mt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">{item.data.stack.slice(0, 3).join(' / ')}</p>
-					)}
-				</a>
-			))}
-		</div>
+		{portfolioItems.length > 0 ? (
+			<div class="grid gap-4 md:grid-cols-3">
+				{portfolioItems.map((item) => (
+					<a href={`/portfolio/${item.id}/`} class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground">
+						<h3 class="font-[Fraunces] text-2xl leading-tight">{item.data.title}</h3>
+						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{item.data.summary}</p>
+						{item.data.stack.length > 0 && (
+							<p class="mt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">{item.data.stack.slice(0, 3).join(' / ')}</p>
+						)}
+					</a>
+				))}
+			</div>
+		) : (
+			<article class="rounded-2xl border border-dashed border-border bg-muted p-6">
+				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">No portfolio entries yet</p>
+				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">Add projects in <code>src/content/portfolio</code> to populate this section.</p>
+			</article>
+		)}
 	</section>
 
-	{featuredPost && (
-		<section class="space-y-4">
-			<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Featured writing</p>
+	<section class="space-y-4">
+		<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Featured writing</p>
+		{featuredPost ? (
 			<a
 				href={`/blog/${featuredPost.id}/`}
 				class="group block rounded-3xl border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-muted-foreground md:p-10"
@@ -120,8 +129,13 @@ const portfolioItems = (await getCollection('portfolio'))
 					Read article
 				</span>
 			</a>
-		</section>
-	)}
+		) : (
+			<article class="rounded-3xl border border-dashed border-border bg-muted p-6 md:p-8">
+				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">No articles yet</p>
+				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">Publish your first post in <code>src/content/blog</code> to show featured writing.</p>
+			</article>
+		)}
+	</section>
 
 	<section class="space-y-5">
 		<div class="flex items-end justify-between gap-4">
@@ -130,16 +144,27 @@ const portfolioItems = (await getCollection('portfolio'))
 				Browse all
 			</a>
 		</div>
-		<div class="grid gap-4 md:grid-cols-3">
-			{recentPosts.map((post) => (
-				<a
-					href={`/blog/${post.id}/`}
-					class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground"
-				>
-					<h3 class="font-[Fraunces] text-2xl leading-tight">{post.data.title}</h3>
-					<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
-				</a>
-			))}
-		</div>
+		{hasRecentPosts ? (
+			<div class="grid gap-4 md:grid-cols-3">
+				{recentPosts.map((post) => (
+					<a
+						href={`/blog/${post.id}/`}
+						class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground"
+					>
+						<h3 class="font-[Fraunces] text-2xl leading-tight">{post.data.title}</h3>
+						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
+					</a>
+				))}
+			</div>
+		) : (
+			<article class="rounded-2xl border border-dashed border-border bg-muted p-6">
+				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">{hasBlogPosts ? 'No additional articles yet' : 'No articles yet'}</p>
+				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+					{hasBlogPosts
+						? 'Publish more posts to populate recent notes.'
+						: 'Create markdown files in src/content/blog to populate recent notes.'}
+				</p>
+			</article>
+		)}
 	</section>
 </Layout>

@@ -15,6 +15,8 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content } = await render(post);
+const hasValidImage = (image: unknown): image is import('astro').ImageMetadata =>
+	typeof image === 'object' && image !== null && 'src' in image;
 ---
 
 <Layout
@@ -37,7 +39,7 @@ const { Content } = await render(post);
 			</p>
 		)}
 
-		{post.data.heroImage && (
+		{hasValidImage(post.data.heroImage) && (
 			<div class="mt-8 overflow-hidden rounded-2xl border border-border bg-muted">
 				<Image
 					src={post.data.heroImage}

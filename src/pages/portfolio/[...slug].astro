@@ -16,12 +16,16 @@ type Props = CollectionEntry<'portfolio'>;
 
 const item = Astro.props;
 const { Content } = await render(item);
+const coverImage =
+	typeof item.data.coverImage === 'object' && item.data.coverImage !== null && 'src' in item.data.coverImage
+		? item.data.coverImage
+		: defaultCoverImage;
 ---
 
 <Layout
 	title={`${item.data.title} | Portfolio`}
 	description={item.data.summary}
-	image={item.data.coverImage ?? defaultCoverImage}
+	image={coverImage}
 	mainClass="relative mx-auto w-full max-w-5xl px-5 pb-20 pt-12 md:px-8 md:pt-16"
 	backgroundClass="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,_rgba(0,0,0,0.1),_transparent_54%)] dark:bg-[radial-gradient(circle_at_50%_-10%,_rgba(255,255,255,0.08),_transparent_54%)]"
 >
@@ -40,7 +44,7 @@ const { Content } = await render(item);
 
 		<div class="mt-8 overflow-hidden rounded-2xl border border-border bg-muted">
 			<Image
-				src={item.data.coverImage ?? defaultCoverImage}
+				src={coverImage}
 				width={1200}
 				height={630}
 				alt={item.data.title}
