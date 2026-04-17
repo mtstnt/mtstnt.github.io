@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import defaultCoverImage from '../../assets/blog-placeholder-4.jpg';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+	const portfolioItems = await getCollection('portfolio');
+	return portfolioItems.map((item) => ({
+		params: { slug: item.id },
+		props: item,
+	}));
+}
+
+type Props = CollectionEntry<'portfolio'>;
+
+const item = Astro.props;
+const { Content } = await render(item);
+---
+
+<Layout
+	title={`${item.data.title} | Portfolio`}
+	description={item.data.summary}
+	image={item.data.coverImage ?? defaultCoverImage}
+	mainClass="relative mx-auto w-full max-w-5xl px-5 pb-20 pt-12 md:px-8 md:pt-16"
+	backgroundClass="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,_rgba(0,0,0,0.1),_transparent_54%)] dark:bg-[radial-gradient(circle_at_50%_-10%,_rgba(255,255,255,0.08),_transparent_54%)]"
+>
+	<article class="mx-auto max-w-3xl rounded-3xl border border-border bg-card p-6 md:p-10">
+		<p class="text-xs uppercase tracking-[0.28em] text-muted-foreground">Portfolio case study</p>
+		<h1 class="mt-4 font-[Fraunces] text-4xl leading-[0.97] md:text-6xl">{item.data.title}</h1>
+		<p class="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">{item.data.summary}</p>
+
+		{(item.data.role || item.data.pubDate) && (
+			<p class="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+				{item.data.role && <span>{item.data.role}</span>}
+				{item.data.role && item.data.pubDate && <span> / </span>}
+				{item.data.pubDate && <span>{item.data.pubDate.getFullYear()}</span>}
+			</p>
+		)}
+
+		<div class="mt-8 overflow-hidden rounded-2xl border border-border bg-muted">
+			<Image
+				src={item.data.coverImage ?? defaultCoverImage}
+				width={1200}
+				height={630}
+				alt={item.data.title}
+				class="h-full w-full object-cover"
+			/>
+		</div>
+
+		{(item.data.demoUrl || item.data.repoUrl) && (
+			<div class="mt-6 flex flex-wrap gap-3 text-xs uppercase tracking-[0.2em]">
+				{item.data.demoUrl && (
+					<a href={item.data.demoUrl} class="rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:text-foreground">
+						Live demo
+					</a>
+				)}
+				{item.data.repoUrl && (
+					<a href={item.data.repoUrl} class="rounded-full border border-border px-3 py-1.5 text-muted-foreground transition hover:text-foreground">
+						Source
+					</a>
+				)}
+			</div>
+		)}
+
+		<div
+			class="mt-10 text-[17px] leading-8 text-foreground
+			[&_a]:underline [&_a]:decoration-border [&_a]:decoration-2 [&_a]:underline-offset-4 [&_a:hover]:decoration-foreground
+			[&_blockquote]:my-8 [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-muted-foreground
+			[&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.9em]
+			[&_h2]:mt-14 [&_h2]:font-[Fraunces] [&_h2]:text-3xl [&_h2]:leading-tight
+			[&_h3]:mt-10 [&_h3]:font-[Fraunces] [&_h3]:text-2xl [&_h3]:leading-tight
+			[&_img]:my-8 [&_img]:rounded-xl [&_img]:border [&_img]:border-border
+			[&_li]:my-2 [&_ol]:my-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:my-6 [&_pre]:my-8 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border [&_pre]:bg-muted [&_pre]:p-4 [&_ul]:my-6 [&_ul]:list-disc [&_ul]:pl-6"
+		>
+			<Content />
+		</div>
+	</article>
+</Layout>

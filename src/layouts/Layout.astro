@@ -23,6 +23,8 @@ const {
 	mainClass = 'relative mx-auto flex w-full max-w-6xl flex-col gap-16 px-5 pb-16 pt-12 md:px-8 md:pt-20',
 	backgroundClass = 'pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(0,0,0,0.08),_transparent_58%)] dark:bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.07),_transparent_58%)]',
 } = Astro.props;
+
+const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -92,6 +94,9 @@ const {
 			<main class={mainClass}>
 				<slot />
 			</main>
+			<footer class="relative mx-auto w-full max-w-6xl px-5 pb-8 pt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground md:px-8">
+				<p>© {currentYear} Matthew Sutanto. All rights reserved.</p>
+			</footer>
 		</div>
 		<script is:inline>
 			$(() => {
