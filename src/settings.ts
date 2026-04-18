@@ -1,6 +1,7 @@
 export const PROFILE = {
 	username: 'mtstnt',
 	fullName: 'Matthew Sutanto',
+	nickName: 'Matthew',
 	emailMasked: 'matthew.sutanto0612 [at] gmail [dot] com',
 	links: {
 		linkedin: 'https://www.linkedin.com/in/matthewsutanto/',

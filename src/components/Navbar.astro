@@ -4,17 +4,18 @@ import LightModeIcon from './icons/LightModeIcon.astro';
 import { PROFILE } from '../settings';
 
 const pathname = Astro.url.pathname;
+
 const isHome = pathname === '/';
 const isBlog = pathname.startsWith('/blog');
-const isPortfolio = pathname.startsWith('/portfolio');
+const isProjects = pathname.startsWith('/projects');
 ---
 
 <header class="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
 	<nav class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 md:px-8">
 		<a href="/" class="font-[Fraunces] text-xl tracking-tight">{PROFILE.username}</a>
-		<div class="flex items-center gap-4 text-sm uppercase tracking-[0.2em] text-muted-foreground">
+		<div class="flex items-center gap-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
 			<a href="/" class={`pb-1 transition hover:text-foreground ${isHome ? 'border-b border-foreground text-foreground' : ''}`}>Home</a>
-			<a href="/portfolio" class={`pb-1 transition hover:text-foreground ${isPortfolio ? 'border-b border-foreground text-foreground' : ''}`}>Portfolio</a>
+			<a href="/projects" class={`pb-1 transition hover:text-foreground ${isProjects ? 'border-b border-foreground text-foreground' : ''}`}>Projects</a>
 			<a href="/blog" class={`pb-1 transition hover:text-foreground ${isBlog ? 'border-b border-foreground text-foreground' : ''}`}>Blog</a>
 			<button
 				id="theme-toggle"

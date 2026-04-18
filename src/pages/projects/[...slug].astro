@@ -5,14 +5,14 @@ import defaultCoverImage from '../../assets/blog-placeholder-4.jpg';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
-	const portfolioItems = await getCollection('portfolio');
-	return portfolioItems.map((item) => ({
+	const projects = await getCollection('projects');
+	return projects.map((item) => ({
 		params: { slug: item.id },
 		props: item,
 	}));
 }
 
-type Props = CollectionEntry<'portfolio'>;
+type Props = CollectionEntry<'projects'>;
 
 const item = Astro.props;
 const { Content } = await render(item);

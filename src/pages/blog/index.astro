@@ -26,7 +26,7 @@ const hasValidImage = (image: unknown): image is import('astro').ImageMetadata =
 			Technical essays, build logs, and experiments.
 		</h1>
 		<p class="max-w-2xl text-base leading-relaxed text-muted-foreground">
-			A running catalog of software notes, from architecture sketches to post-mortems.
+			Notes for self-reminder from the things I've had happened or I observed around me.
 		</p>
 	</section>
 
@@ -61,10 +61,6 @@ const hasValidImage = (image: unknown): image is import('astro').ImageMetadata =
 		) : (
 			<article class="rounded-3xl border border-dashed border-border bg-muted p-8 md:col-span-2 md:p-10">
 				<p class="text-xs uppercase tracking-[0.28em] text-muted-foreground">No articles yet</p>
-				<h2 class="mt-3 font-[Fraunces] text-3xl leading-tight">The writing archive is empty.</h2>
-				<p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-					Publish your first markdown article in <code>src/content/blog</code> and it will appear here.
-				</p>
 			</article>
 		)}
 	</section>

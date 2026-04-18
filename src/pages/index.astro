@@ -14,7 +14,7 @@ const recentPosts = posts.slice(1, 4);
 const hasBlogPosts = posts.length > 0;
 const hasRecentPosts = recentPosts.length > 0;
 
-const portfolioItems = (await getCollection('portfolio'))
+const projects = (await getCollection('projects'))
 	.sort((a, b) => {
 		const featuredOrder = Number(b.data.featured) - Number(a.data.featured);
 		if (featuredOrder !== 0) return featuredOrder;
@@ -24,46 +24,29 @@ const portfolioItems = (await getCollection('portfolio'))
 ---
 
 <Layout title={SITE_METADATA.title} description={SITE_METADATA.description}>
-	<section class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-		<div class="space-y-6">
-			<p class="text-xs uppercase tracking-[0.35em] text-muted-foreground">Personal site</p>
-			<h1 class="max-w-3xl font-[Fraunces] text-5xl leading-[0.95] md:text-7xl">
-				Software engineer building dependable products and writing about the process.
-			</h1>
-			<p class="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-				This is my portfolio and journal for architecture notes, product experiments, and lessons from
-				shipping software.
-			</p>
-		</div>
-		<div class="rounded-3xl border border-border bg-card p-6 shadow-[0_22px_48px_-38px_rgba(0,0,0,0.35)] dark:shadow-[0_22px_48px_-38px_rgba(0,0,0,0.9)] md:p-8">
-			<p class="text-xs uppercase tracking-[0.35em] text-muted-foreground">Open to</p>
-			<p class="mt-4 font-[Fraunces] text-2xl leading-tight">Senior frontend roles, platform engineering, and product-focused teams.</p>
-			<p class="mt-4 text-sm leading-relaxed text-muted-foreground">
-				I care about maintainable systems, thoughtful UX, and collaboration that helps teams ship with
-				confidence.
-			</p>
-		</div>
+	<section class="flex flex-col gap-10 lg:flex-row">
+		<h1 class="max-w-3xl font-[Fraunces] text-5xl leading-[0.95] md:text-7xl">
+			Software engineerring is a constant process of learning and unlearning.
+		</h1>
+		<!-- <p class="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+			<div class="overflow-hidden rounded-2xl border border-border bg-muted">
+				<Image src={profileImage} alt="Profile photo" width={800} height={1000} class="object-cover w-full h-full" />
+			</div>
+		</p> -->
 	</section>
 
-	<section class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-stretch">
-		<div class="rounded-3xl border border-border bg-card p-4 md:p-5">
-			<div class="overflow-hidden rounded-2xl border border-border bg-muted">
-				<Image src={profileImage} alt="Profile photo" width={800} height={1000} class="h-full w-full object-cover" />
-			</div>
-			<p class="mt-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">Replace with `src/assets/profile.jpg`</p>
+	<section class="flex flex-col gap-6 p-6 rounded-3xl border lg:flex-row border-border bg-card md:p-8">
+		<div class="overflow-hidden rounded-2xl border border-border bg-muted">
+			<Image src={profileImage} alt="Profile photo" width={800} height={1000} class="object-cover w-full h-full" />
 		</div>
-		<div class="rounded-3xl border border-border bg-card p-6 md:p-8">
+		<div class="">
 			<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">About me</p>
-			<h2 class="mt-3 font-[Fraunces] text-3xl leading-tight md:text-4xl">Hi, I'm {PROFILE.username}.</h2>
+			<h2 class="mt-3 font-[Fraunces] text-3xl leading-tight md:text-4xl">Hi, I'm {PROFILE.nickName}.</h2>
 			<p class="mt-4 text-base leading-relaxed text-muted-foreground">
 				I build software with a focus on simplicity, reliability, and readable architecture. I enjoy
 				working across product and engineering to make complex systems feel approachable.
 			</p>
-			<p class="mt-3 text-base leading-relaxed text-muted-foreground">
-				On this site I share practical engineering notes and document portfolio projects directly from
-				markdown so updates stay lightweight.
-			</p>
-			<div class="mt-6 border-t border-border pt-5">
+			<div class="pt-5 mt-6 border-t border-border">
 				<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Connect</p>
 				<div class="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em]">
 					<a
@@ -83,22 +66,22 @@ const portfolioItems = (await getCollection('portfolio'))
 						GitHub
 					</a>
 				</div>
-				<p class="mt-3 text-sm text-muted-foreground">{PROFILE.emailMasked}</p>
+				<p class="mt-3 text-sm text-muted-foreground">Email: {PROFILE.emailMasked}</p>
 			</div>
 		</div>
 	</section>
 
 	<section class="space-y-5">
-		<div class="flex items-end justify-between gap-4">
+		<div class="flex gap-4 justify-between items-end">
 			<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Portfolio</p>
-			<a href="/portfolio" class="text-xs uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground">
-				View all projects
+			<a href="/portfolio" class="underline text-xs uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground">
+				Browse all
 			</a>
 		</div>
-		{portfolioItems.length > 0 ? (
+		{projects.length > 0 ? (
 			<div class="grid gap-4 md:grid-cols-3">
-				{portfolioItems.map((item) => (
-					<a href={`/portfolio/${item.id}/`} class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground">
+				{projects.map((item) => (
+					<a href={`/projects/${item.id}/`} class="p-5 rounded-2xl border transition border-border bg-muted hover:border-muted-foreground">
 						<h3 class="font-[Fraunces] text-2xl leading-tight">{item.data.title}</h3>
 						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{item.data.summary}</p>
 						{item.data.stack.length > 0 && (
@@ -108,39 +91,16 @@ const portfolioItems = (await getCollection('portfolio'))
 				))}
 			</div>
 		) : (
-			<article class="rounded-2xl border border-dashed border-border bg-muted p-6">
+			<article class="p-6 rounded-2xl border border-dashed border-border bg-muted">
 				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">No portfolio entries yet</p>
-				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">Add projects in <code>src/content/portfolio</code> to populate this section.</p>
-			</article>
-		)}
-	</section>
-
-	<section class="space-y-4">
-		<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Featured writing</p>
-		{featuredPost ? (
-			<a
-				href={`/blog/${featuredPost.id}/`}
-				class="group block rounded-3xl border border-border bg-card p-6 transition hover:-translate-y-0.5 hover:border-muted-foreground md:p-10"
-			>
-				<p class="text-sm text-muted-foreground">Latest article</p>
-				<h2 class="mt-2 max-w-3xl font-[Fraunces] text-3xl leading-tight md:text-4xl">{featuredPost.data.title}</h2>
-				<p class="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">{featuredPost.data.description}</p>
-				<span class="mt-6 inline-block text-xs uppercase tracking-[0.25em] text-muted-foreground transition group-hover:text-foreground">
-					Read article
-				</span>
-			</a>
-		) : (
-			<article class="rounded-3xl border border-dashed border-border bg-muted p-6 md:p-8">
-				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">No articles yet</p>
-				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">Publish your first post in <code>src/content/blog</code> to show featured writing.</p>
 			</article>
 		)}
 	</section>
 
 	<section class="space-y-5">
-		<div class="flex items-end justify-between gap-4">
+		<div class="flex gap-4 justify-between items-end">
 			<p class="text-xs uppercase tracking-[0.3em] text-muted-foreground">Recent notes</p>
-			<a href="/blog" class="text-xs uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground">
+			<a href="/blog" class="underline text-xs uppercase tracking-[0.2em] text-muted-foreground transition hover:text-foreground">
 				Browse all
 			</a>
 		</div>
@@ -149,7 +109,7 @@ const portfolioItems = (await getCollection('portfolio'))
 				{recentPosts.map((post) => (
 					<a
 						href={`/blog/${post.id}/`}
-						class="rounded-2xl border border-border bg-muted p-5 transition hover:border-muted-foreground"
+						class="p-5 rounded-2xl border transition border-border bg-muted hover:border-muted-foreground"
 					>
 						<h3 class="font-[Fraunces] text-2xl leading-tight">{post.data.title}</h3>
 						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{post.data.description}</p>
@@ -157,13 +117,8 @@ const portfolioItems = (await getCollection('portfolio'))
 				))}
 			</div>
 		) : (
-			<article class="rounded-2xl border border-dashed border-border bg-muted p-6">
+			<article class="p-6 rounded-2xl border border-dashed border-border bg-muted">
 				<p class="text-xs uppercase tracking-[0.25em] text-muted-foreground">{hasBlogPosts ? 'No additional articles yet' : 'No articles yet'}</p>
-				<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-					{hasBlogPosts
-						? 'Publish more posts to populate recent notes.'
-						: 'Create markdown files in src/content/blog to populate recent notes.'}
-				</p>
 			</article>
 		)}
 	</section>
