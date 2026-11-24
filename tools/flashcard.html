@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flashcards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --desk: #2F4858;
+      --desk-deep: #263C4A;
+      --desk-text: #E4EDF3;
+      --desk-muted: #9FB4C2;
+      --card: #FBFBF8;
+      --rule: #B5CCE3;
+      --margin: #D9505A;
+      --ink: #1E2B34;
+      --ink-soft: #5B6B76;
+      --correct: #2F7D55;
+      --wrong: #B9413A;
+      --pending: #4A6577;
+      --focus: #F2C94C;
+      --radius-card: 6px;
+      --radius-btn: 999px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --desk: #1B2A34;
+        --desk-deep: #15222A;
+        --desk-text: #DCE6EC;
+        --desk-muted: #8CA1AF;
+        --card: #F1F1EC;
+        --pending: #355063;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--desk);
+      background-image: radial-gradient(ellipse at 50% 35%, var(--desk) 0%, var(--desk-deep) 100%);
+      color: var(--desk-text);
+      font-family: "Bricolage Grotesque", system-ui, sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.25rem 1rem 0;
+      max-width: 44rem;
+      width: 100%;
+      margin: 0 auto;
+    }
+    header h1 { font-size: 1.125rem; font-weight: 700; margin: 0; }
+    header a { color: var(--desk-muted); font-size: 0.9375rem; }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    [hidden] { display: none !important; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    /* ---------- index-card surface, shared ---------- */
+    .stock {
+      background-color: var(--card);
+      color: var(--ink);
+      border-radius: var(--radius-card);
+      background-image:
+        linear-gradient(to bottom, transparent 3.1rem, var(--margin) 3.1rem, var(--margin) calc(3.1rem + 2px), transparent calc(3.1rem + 2px)),
+        repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.75rem - 1px), var(--rule) calc(1.75rem - 1px), var(--rule) 1.75rem);
+      background-position: 0 0, 0 3.35rem;
+      background-repeat: no-repeat, repeat;
+      box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 18px 40px -18px rgba(5, 15, 22, .7), 0 2px 4px rgba(5, 15, 22, .25);
+    }
+
+    /* ---------- headings on the desk ---------- */
+    .title {
+      font-size: clamp(2rem, 6vw, 3rem);
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem;
+      max-width: 18ch;
+    }
+    .lede { color: var(--desk-muted); margin: 0 0 2rem; max-width: 52ch; overflow-wrap: anywhere; }
+
+    /* ---------- upload ---------- */
+    .drop {
+      position: relative;
+      display: block;
+      padding: 1.1rem 1.5rem 1.75rem;
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+    /* two cards peeking under the top one: an empty deck waiting to be filled */
+    .drop::before, .drop::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-card);
+      background: var(--card);
+      z-index: -1;
+      opacity: .55;
+      transform: rotate(-2.2deg) translate(-4px, 6px);
+    }
+    .drop::after { opacity: .3; transform: rotate(1.8deg) translate(6px, 10px); }
+    .drop-wrap { position: relative; z-index: 0; }
+    .drop.over { transform: translateY(-4px) rotate(-.6deg); }
+    .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .drop-title { font-weight: 700; font-size: 1.25rem; line-height: 1.75rem; display: block; min-height: 2rem; }
+    .drop-body { display: block; margin-top: 1rem; line-height: 1.75rem; color: var(--ink-soft); }
+    .drop-body strong { color: var(--ink); font-weight: 500; }
+    .drop:focus-within { outline: 3px solid var(--focus); outline-offset: 4px; }
+
+    .example { margin-top: 2.25rem; color: var(--desk-muted); font-size: 0.9375rem; }
+    .example pre {
+      margin: .5rem 0 0;
+      padding: .75rem 1rem;
+      background: rgba(0,0,0,.18);
+      border-radius: 6px;
+      color: var(--desk-text);
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+    }
+
+    .template { margin: 1rem 0 0; }
+    .template a { color: var(--desk-text); font-weight: 500; text-underline-offset: 3px; }
+
+    .error {
+      margin: 1.5rem 0 0;
+      padding: .75rem 1rem;
+      border-left: 3px solid var(--margin);
+      background: rgba(217, 80, 90, .14);
+      color: var(--desk-text);
+    }
+
+    /* ---------- options ---------- */
+    .opts { display: grid; gap: 1.75rem; }
+    .opts fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+    .opts legend, .field-label {
+      display: block;
+      padding: 0;
+      margin-bottom: .6rem;
+      font-weight: 500;
+      font-size: 1.0625rem;
+    }
+
+    .seg {
+      display: inline-flex;
+      padding: 4px;
+      gap: 4px;
+      border-radius: var(--radius-btn);
+      background: rgba(0,0,0,.22);
+    }
+    .seg label { position: relative; cursor: pointer; }
+    .seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+    .seg span {
+      display: block;
+      padding: .55rem 1.25rem;
+      border-radius: var(--radius-btn);
+      color: var(--desk-muted);
+      transition: background-color .15s ease, color .15s ease;
+    }
+    .seg input:checked + span { background: var(--card); color: var(--ink); }
+    .seg label:hover input:not(:checked) + span { color: var(--desk-text); }
+    .seg input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    .range { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; color: var(--desk-muted); }
+    .range label { color: var(--desk-muted); }
+    input[type="number"] {
+      font: inherit;
+      font-size: 1.125rem;
+      font-variant-numeric: tabular-nums;
+      width: 6rem;
+      padding: .5rem .75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.18);
+      color: var(--desk-text);
+    }
+    input[type="number"]:hover { border-color: rgba(255,255,255,.4); }
+    input[type="number"][aria-invalid="true"] { border-color: var(--margin); }
+
+    .summary {
+      margin: 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.12);
+      max-width: 56ch;
+      overflow-wrap: anywhere;
+    }
+    .summary .hint { display: block; color: var(--desk-muted); font-size: .9375rem; margin-top: .25rem; }
+    .summary.invalid { color: #F3A5A8; }
+
+    /* ---------- study ---------- */
+    .status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: .75rem;
+      color: var(--desk-muted);
+      font-size: 0.9375rem;
+      font-variant-numeric: tabular-nums;
+      min-height: 2.25rem;
+    }
+    button.prev {
+      font-size: .9375rem;
+      padding: .4rem .9rem;
+      background: transparent;
+      color: var(--desk-muted);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
+    }
+    button.prev:hover:not(:disabled) { color: var(--desk-text); background: rgba(255,255,255,.08); }
+    button.prev:disabled { opacity: .35; cursor: default; }
+
+    /* one line: green for correct, red for wrong, the rest still to go */
+    .bar {
+      display: flex;
+      height: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+      background: var(--pending);
+      margin-bottom: 1.5rem;
+    }
+    .bar .ok { background: var(--correct); }
+    .bar .no { background: var(--wrong); }
+    .bar div { width: 0; transition: width .25s ease; }
+
+    .scene { perspective: 1400px; }
+    .card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 5 / 3;
+      min-height: 15rem;
+      transform-style: preserve-3d;
+      transition: transform .55s cubic-bezier(.3, .7, .25, 1);
+      cursor: pointer;
+    }
+    .card.flipped { transform: rotateY(180deg); cursor: default; }
+    .card.instant { transition: none; }
+    .face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: .9rem 1.5rem 1.25rem;
+      overflow: hidden;
+    }
+    .face.back { transform: rotateY(180deg); }
+    .face .side {
+      height: 2.2rem;
+      font-size: .875rem;
+      color: var(--ink-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .face .text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: clamp(1.4rem, 4.2vw, 2.25rem);
+      line-height: 1.25;
+      font-weight: 500;
+      overflow-y: auto;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+      padding: .5rem 0;
+    }
+    .face .text.long { font-size: clamp(1.05rem, 2.6vw, 1.35rem); line-height: 1.45; font-weight: 400; }
+
+    /* back of the card: the front repeated, a blank line, then the answer */
+    .face .text.qa { flex-direction: column; justify-content: safe center; gap: 1.75rem; }
+    .qa .long { font-size: clamp(1.05rem, 2.6vw, 1.35rem); line-height: 1.45; font-weight: 400; }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: .75rem;
+      margin-top: 2rem;
+      min-height: 3.25rem;
+    }
+    button {
+      font: inherit;
+      font-weight: 500;
+      font-size: 1.0625rem;
+      border: 0;
+      border-radius: var(--radius-btn);
+      padding: .8rem 1.6rem;
+      cursor: pointer;
+      color: var(--desk-text);
+      background: rgba(255,255,255,.1);
+      transition: background-color .15s ease, transform .1s ease, opacity .15s ease;
+    }
+    button:hover { background: rgba(255,255,255,.18); }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    button.primary { background: var(--card); color: var(--ink); }
+    button.primary:hover { background: #fff; }
+    button.primary:disabled { opacity: .4; cursor: not-allowed; }
+    button.correct { background: var(--correct); color: #fff; min-width: 9rem; }
+    button.correct:hover { background: #369063; }
+    button.wrong { background: var(--wrong); color: #fff; min-width: 9rem; }
+    button.wrong:hover { background: #CC4B43; }
+    kbd {
+      font-family: inherit;
+      font-size: .75em;
+      opacity: .7;
+      margin-left: .5rem;
+      padding: 0 .35em;
+      border: 1px solid currentColor;
+      border-radius: 4px;
+    }
+    @media (hover: none) { kbd { display: none; } }
+    .left { justify-content: flex-start; flex-wrap: wrap; }
+
+    /* ---------- results ---------- */
+    .results .stock { padding: .9rem 1.5rem 1.75rem; }
+    .score-line { height: 2.2rem; color: var(--ink-soft); font-size: .875rem; margin: 0; }
+    .pct {
+      font-size: clamp(4.5rem, 18vw, 8rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin: .5rem 0 .25rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .split { display: flex; gap: 2rem; font-size: 1.125rem; line-height: 1.75rem; margin: 0; }
+    .split b { font-variant-numeric: tabular-nums; }
+    .split .c b { color: var(--correct); }
+    .split .w b { color: var(--wrong); }
+
+    .missed { margin-top: 2.5rem; }
+    .missed h3 { font-size: 1.125rem; margin: 0 0 .75rem; }
+    .missed ul { list-style: none; margin: 0; padding: 0; }
+    .missed li {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: .6rem 0;
+      border-top: 1px solid rgba(255,255,255,.12);
+      overflow-wrap: anywhere;
+    }
+    .missed li span:last-child { color: var(--desk-muted); }
+
+    @media (max-width: 30rem) {
+      .actions { gap: .5rem; }
+      button.correct, button.wrong { flex: 1; min-width: 0; }
+      .missed li { grid-template-columns: 1fr; gap: 0; }
+      .seg { display: flex; }
+      .seg label { flex: 1; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card, .drop, .bar div, button, .seg span { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Flashcards</h1>
+    <a href="../index.html">Home</a>
+  </header>
+
+  <main>
+    <!-- Upload -->
+    <section id="upload">
+      <h2 class="title">Load a deck and test yourself.</h2>
+      <p class="lede">Pick a CSV file with the front of each card in the first column and the back in the second. You'll choose which cards to study next.</p>
+
+      <div class="drop-wrap">
+        <label class="drop stock" id="drop">
+          <input type="file" id="file" accept=".csv,.txt,.tsv,text/csv,text/plain">
+          <span class="drop-title">Choose a CSV file</span>
+          <span class="drop-body">or drag it onto this card.<br>Columns can be separated by <strong>|</strong>, a comma, a semicolon, or a tab.</span>
+        </label>
+      </div>
+
+      <p class="error" id="error" role="alert" hidden></p>
+
+      <div class="example">
+        Example file:
+        <pre>Front | Back
+Bonjour | Hello
+Merci | Thank you
+Au revoir | Goodbye</pre>
+        <p class="template">
+          <a id="template" download="flashcards-template.csv" href="#">Download a template CSV</a>
+          to fill in with a spreadsheet app or text editor.
+        </p>
+      </div>
+    </section>
+
+    <!-- Options -->
+    <section id="options" hidden>
+      <h2 class="title" id="deckTitle">0 cards loaded</h2>
+      <p class="lede" id="deckFrom"></p>
+
+      <form class="opts" id="optForm" novalidate>
+        <fieldset>
+          <legend>Order</legend>
+          <div class="seg">
+            <label><input type="radio" name="mode" value="shuffle" checked><span>Shuffled</span></label>
+            <label><input type="radio" name="mode" value="order"><span>In order</span></label>
+          </div>
+        </fieldset>
+
+        <div id="shuffleOpts">
+          <label class="field-label" for="count">How many cards</label>
+          <div class="range">
+            <input type="number" id="count" min="1" step="1" inputmode="numeric">
+            <span id="countOf">of 0</span>
+          </div>
+        </div>
+
+        <div id="orderOpts" hidden>
+          <span class="field-label" id="rowsLabel">Rows</span>
+          <div class="range" role="group" aria-labelledby="rowsLabel">
+            <label for="from">From row</label>
+            <input type="number" id="from" min="1" step="1" inputmode="numeric">
+            <label for="to">to row</label>
+            <input type="number" id="to" min="1" step="1" inputmode="numeric">
+          </div>
+        </div>
+
+        <p class="summary" id="summary" aria-live="polite"></p>
+
+        <div class="actions left" style="margin-top:0">
+          <button type="submit" class="primary" id="start">Start</button>
+          <button type="button" id="changeFile">Load another file</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Study -->
+    <section id="study" hidden>
+      <div class="status">
+        <span id="counter" aria-live="polite">Card 1 of 1</span>
+        <button class="prev" id="prev" disabled>Previous card<kbd>←</kbd></button>
+      </div>
+      <div class="bar" id="bar" role="progressbar" aria-label="Progress" aria-valuemin="0">
+        <div class="ok" id="barOk"></div>
+        <div class="no" id="barNo"></div>
+      </div>
+
+      <div class="scene">
+        <div class="card" id="card">
+          <div class="face front stock">
+            <div class="side">Front</div>
+            <div class="text" id="frontText"></div>
+          </div>
+          <div class="face back stock">
+            <div class="side">Back</div>
+            <div class="text qa">
+              <div class="q" id="backFront"></div>
+              <div class="a" id="backText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions" id="revealRow">
+        <button class="primary" id="reveal">Reveal answer<kbd>Space</kbd></button>
+      </div>
+      <div class="actions" id="gradeRow" hidden>
+        <button class="wrong" id="wrong">Wrong<kbd>W</kbd></button>
+        <button class="correct" id="correct">Correct<kbd>C</kbd></button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results" class="results" hidden>
+      <div class="stock">
+        <p class="score-line" id="scoreLine"></p>
+        <div class="pct" id="pct"></div>
+        <p class="split">
+          <span class="c"><b id="nCorrect">0</b> correct</span>
+          <span class="w"><b id="nWrong">0</b> wrong</span>
+        </p>
+      </div>
+
+      <div class="actions left">
+        <button class="primary" id="retryMissed">Retry the wrong ones</button>
+        <button id="chooseAgain">Choose cards again</button>
+        <button id="newDeck">Load another file</button>
+      </div>
+
+      <div class="missed" id="missed">
+        <h3>Cards you got wrong</h3>
+        <ul id="missedList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const views = { upload: $("upload"), options: $("options"), study: $("study"), results: $("results") };
+
+    let deck = [];      // all cards from the file, each { front, back, row }
+    let mode = "shuffle";
+    let queue = [];     // cards for this round
+    let index = 0;
+    let answers = [];   // answers[i] is the grade for queue[i]; always answers.length === index
+    let revealed = false;
+
+    function show(name) {
+      for (const [key, el] of Object.entries(views)) el.hidden = key !== name;
+      window.scrollTo(0, 0);
+    }
+
+    // ---------- CSV parsing ----------
+    function detectDelimiter(text) {
+      const line = text.split("\n").find((l) => l.trim()) || "";
+      if (line.includes("|")) return "|";
+      if (line.includes("\t")) return "\t";
+      const semis = (line.match(/;/g) || []).length;
+      const commas = (line.match(/,/g) || []).length;
+      return semis > commas ? ";" : ",";
+    }
+
+    function parseRows(text, delim) {
+      const rows = [];
+      let row = [], field = "", inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (text[i + 1] === '"') { field += '"'; i++; }
+            else inQuotes = false;
+          } else field += ch;
+        } else if (ch === '"' && field.trim() === "") {
+          inQuotes = true; field = "";
+        } else if (ch === delim) {
+          row.push(field); field = "";
+        } else if (ch === "\n") {
+          row.push(field); rows.push(row); row = []; field = "";
+        } else field += ch;
+      }
+      row.push(field); rows.push(row);
+      return rows;
+    }
+
+    function parseDeck(raw) {
+      const text = raw.replace(/^﻿/, "").replace(/\r\n?/g, "\n");
+      const delim = detectDelimiter(text);
+      const rows = parseRows(text, delim)
+        .map((r) => r.map((f) => f.trim()))
+        .filter((r) => r.length >= 2 && r[0] && r.slice(1).join("").trim());
+
+      if (rows.length && rows[0][0].toLowerCase() === "front" && rows[0][1].toLowerCase() === "back") rows.shift();
+
+      // Extra columns belong to the back (e.g. an unquoted comma in the answer).
+      const joiner = delim === "," ? ", " : delim === "\t" ? " " : ` ${delim} `;
+      return rows.map((r, i) => ({ front: r[0], back: r.slice(1).filter(Boolean).join(joiner), row: i + 1 }));
+    }
+
+    function shuffle(list) {
+      const a = list.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // ---------- loading ----------
+    function showError(msg) {
+      $("error").textContent = msg;
+      $("error").hidden = !msg;
+    }
+
+    function loadFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const cards = parseDeck(String(reader.result));
+        if (!cards.length) {
+          showError(`No cards found in ${file.name}. Each line needs a front and a back, separated by | or a comma.`);
+          return;
+        }
+        showError("");
+        deck = cards;
+        resetOptions(file.name);
+        show("options");
+        $("start").focus({ preventScroll: true });
+      };
+      reader.onerror = () => showError(`Couldn't read ${file.name}. Try choosing the file again.`);
+      reader.readAsText(file);
+    }
+
+    $("file").addEventListener("change", (e) => {
+      loadFile(e.target.files[0]);
+      e.target.value = "";
+    });
+
+    const drop = $("drop");
+    ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
+    drop.addEventListener("drop", (e) => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+
+    // Comma-separated so it opens as two columns in Excel, Numbers, or Google Sheets.
+    const TEMPLATE = [
+      "Front,Back",
+      "Bonjour,Hello",
+      "Merci,Thank you",
+      "Au revoir,Goodbye",
+      '"Wrap text in quotes, like this","if it contains a comma"',
+    ].join("\r\n") + "\r\n";
+    $("template").href = "data:text/csv;charset=utf-8," + encodeURIComponent(TEMPLATE);
+
+    // ---------- options ----------
+    const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+    const quote = (s) => `“${s.length > 40 ? s.slice(0, 40).trimEnd() + "…" : s}”`;
+
+    function resetOptions(fileName) {
+      const n = deck.length;
+      $("deckTitle").textContent = `${plural(n, "card")} loaded`;
+      $("deckFrom").textContent = `From ${fileName}. Choose which cards to study.`;
+      $("countOf").textContent = `of ${n}`;
+      for (const id of ["count", "from", "to"]) $(id).max = n;
+      $("count").value = n;
+      $("from").value = 1;
+      $("to").value = n;
+      document.querySelector('input[name="mode"][value="shuffle"]').checked = true;
+      updateOptions();
+    }
+
+    function readInt(id) {
+      const v = $(id).value.trim();
+      return /^\d+$/.test(v) ? Number(v) : NaN;
+    }
+
+    // Returns { cards, text, hint } when valid, or { error } when not.
+    function currentSelection() {
+      const n = deck.length;
+      mode = document.querySelector('input[name="mode"]:checked').value;
+
+      if (mode === "shuffle") {
+        const count = readInt("count");
+        if (!(count >= 1 && count <= n)) return { error: `Enter a number of cards from 1 to ${n}.`, bad: ["count"] };
+        return {
+          cards: () => shuffle(deck).slice(0, count),
+          text: count === n ? `All ${plural(n, "card")} in random order.` : `${plural(count, "card")} picked at random from ${n}.`,
+        };
+      }
+
+      const from = readInt("from"), to = readInt("to");
+      const bad = [];
+      if (!(from >= 1 && from <= n)) bad.push("from");
+      if (!(to >= 1 && to <= n)) bad.push("to");
+      if (bad.length) return { error: `Rows go from 1 to ${n}.`, bad };
+      if (from > to) return { error: "The first row has to come before the last row.", bad: ["from", "to"] };
+      const slice = deck.slice(from - 1, to);
+      return {
+        cards: () => slice,
+        text: `Rows ${from} to ${to}, ${plural(slice.length, "card")}, in file order.`,
+        hint: from === to ? `Just ${quote(slice[0].front)}.` : `Starts with ${quote(slice[0].front)} and ends with ${quote(slice[slice.length - 1].front)}.`,
+      };
+    }
+
+    function updateOptions() {
+      const sel = currentSelection();
+      $("shuffleOpts").hidden = mode !== "shuffle";
+      $("orderOpts").hidden = mode !== "order";
+      for (const id of ["count", "from", "to"]) $(id).setAttribute("aria-invalid", String(!!sel.bad?.includes(id)));
+
+      const summary = $("summary");
+      summary.classList.toggle("invalid", !!sel.error);
+      summary.textContent = sel.error || sel.text;
+      if (sel.hint) {
+        const hint = document.createElement("span");
+        hint.className = "hint";
+        hint.textContent = sel.hint;
+        summary.append(hint);
+      }
+      $("start").disabled = !!sel.error;
+      return sel;
+    }
+
+    $("optForm").addEventListener("input", updateOptions);
+    $("optForm").addEventListener("change", updateOptions);
+    $("optForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const sel = updateOptions();
+      if (!sel.error) startRound(sel.cards());
+    });
+    $("changeFile").addEventListener("click", () => { show("upload"); $("file").focus(); });
+
+    // ---------- study ----------
+    function startRound(cards) {
+      queue = cards;
+      index = 0;
+      answers = [];
+      show("study");
+      renderCard();
+    }
+
+    function setText(el, text) {
+      el.textContent = text;
+      el.classList.toggle("long", text.length > 90);
+    }
+
+    function renderProgress() {
+      const total = queue.length;
+      const right = answers.filter(Boolean).length;
+      $("barOk").style.width = `${(right / total) * 100}%`;
+      $("barNo").style.width = `${((answers.length - right) / total) * 100}%`;
+      $("bar").setAttribute("aria-valuemax", total);
+      $("bar").setAttribute("aria-valuenow", answers.length);
+      $("bar").setAttribute("aria-valuetext", `${answers.length} of ${total} answered, ${right} correct`);
+    }
+
+    function renderCard() {
+      const card = queue[index];
+      const el = $("card");
+
+      // Turn back to the front without animating, so the next answer never shows.
+      el.classList.add("instant");
+      el.classList.remove("flipped");
+      void el.offsetWidth;
+      el.classList.remove("instant");
+
+      setText($("frontText"), card.front);
+      setText($("backFront"), card.front);
+      setText($("backText"), card.back);
+
+      revealed = false;
+      $("revealRow").hidden = false;
+      $("gradeRow").hidden = true;
+      $("prev").disabled = index === 0;
+
+      $("counter").textContent = `Card ${index + 1} of ${queue.length}`;
+      renderProgress();
+      $("reveal").focus({ preventScroll: true });
+    }
+
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
+      $("card").classList.add("flipped");
+      $("revealRow").hidden = true;
+      $("gradeRow").hidden = false;
+      $("correct").focus({ preventScroll: true });
+    }
+
+    function grade(correct) {
+      if (!revealed) return;
+      answers.push(correct);
+      index++;
+      if (index < queue.length) renderCard();
+      else showResults();
+    }
+
+    // Going back clears that card's grade so it can be answered again.
+    function goBack() {
+      if (index === 0) return;
+      index--;
+      answers.pop();
+      renderCard();
+    }
+
+    $("reveal").addEventListener("click", reveal);
+    $("card").addEventListener("click", reveal);
+    $("correct").addEventListener("click", () => grade(true));
+    $("wrong").addEventListener("click", () => grade(false));
+    $("prev").addEventListener("click", goBack);
+
+    document.addEventListener("keydown", (e) => {
+      if (views.study.hidden || e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      if (k === "arrowleft") { e.preventDefault(); goBack(); }
+      else if (!revealed && (k === " " || k === "enter")) { e.preventDefault(); reveal(); }
+      else if (revealed && k === "c") grade(true);
+      else if (revealed && k === "w") grade(false);
+    });
+
+    // ---------- results ----------
+    function showResults() {
+      const total = answers.length;
+      const right = answers.filter(Boolean).length;
+      const wrongs = queue.filter((_, i) => !answers[i]);
+      const pct = Math.round((right / total) * 100);
+
+      $("scoreLine").textContent = `You answered ${plural(total, "card")}`;
+      $("pct").textContent = `${pct}%`;
+      $("nCorrect").textContent = right;
+      $("nWrong").textContent = wrongs.length;
+
+      $("missed").hidden = !wrongs.length;
+      $("retryMissed").hidden = !wrongs.length;
+      $("missedList").replaceChildren(...wrongs.map((card) => {
+        const li = document.createElement("li");
+        const f = document.createElement("span"); f.textContent = card.front;
+        const b = document.createElement("span"); b.textContent = card.back;
+        li.append(f, b);
+        return li;
+      }));
+
+      show("results");
+      (wrongs.length ? $("retryMissed") : $("chooseAgain")).focus({ preventScroll: true });
+    }
+
+    $("retryMissed").addEventListener("click", () => {
+      const wrongs = queue.filter((_, i) => !answers[i]);
+      startRound(mode === "shuffle" ? shuffle(wrongs) : wrongs.sort((a, b) => a.row - b.row));
+    });
+    $("chooseAgain").addEventListener("click", () => { show("options"); $("start").focus({ preventScroll: true }); });
+    $("newDeck").addEventListener("click", () => { show("upload"); $("file").focus(); });
+  </script>
+</body>
+</html>
